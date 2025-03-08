@@ -10,7 +10,7 @@ st.title("🕒 勤務時間抽出＆フォーマット修正ツール")
 uploaded_file = st.file_uploader("📂 Excelファイルをアップロード", type=["xlsx"])
 
 # 検索する名前を入力
-search_name = st.text_input("🔎 検索する名前を入力:", "名前")
+search_name = st.text_input("🔎 検索する名前を入力:", "宇都宮美香")
 
 # 時間フォーマット修正関数
 def format_time(time_str):
@@ -56,19 +56,28 @@ if uploaded_file:
         for col_idx in range(data.shape[1]):  # 列ごとにスキャン
             cell_value = str(data.iloc[row_idx, col_idx]).strip()  # セルの値を取得
             if search_name in cell_value:  # ユーザー指定の名前を検索
+                # **3～4行上の日付データを取得（桁数チェック付き）**
+                date_value = None
+                for offset in range(3, 5):
+                    if row_idx - offset >= 0:
+                        potential_date = str(data.iloc[row_idx - offset, col_idx]).strip()
+                        if potential_date.isdigit() and 1 <= len(potential_date) <= 2:
+                            date_value = potential_date  # 2桁以内の数値のみ日付として認識
+                            break
+                
                 # **隣のセルから時間データ取得**
                 if col_idx + 1 < data.shape[1]:  # 右隣のセルがある場合のみ取得
                     time_value = str(data.iloc[row_idx, col_idx + 1]).strip()
                     start_time, end_time, work_hours = format_time(time_value)
                     if start_time and end_time:
                         work_days += 1  # 勤務回数をカウント
-                        memo_list.append([search_name, start_time, end_time, work_hours])
+                        memo_list.append([date_value, search_name, start_time, end_time, work_hours])
                         total_work_hours += work_hours  # 合計時間を加算
 
     # **結果を表示**
     st.subheader(f"📋 『{search_name}』の勤務時間（フォーマット修正後）")
     if memo_list:
-        df_result = pd.DataFrame(memo_list, columns=["名前", "開始時間", "終了時間", "勤務時間（時間）"])
+        df_result = pd.DataFrame(memo_list, columns=["日付", "名前", "開始時間", "終了時間", "勤務時間（時間）"])
         st.dataframe(df_result)
 
         # **合計勤務時間を表示**
