@@ -38,9 +38,9 @@ def format_time(time_str):
 if uploaded_file:
     # ファイル拡張子をチェック
     file_extension = uploaded_file.name.split(".")[-1]
-    engine = "openpyxl" if file_extension == "xlsx" else "xlrd"
-
-    # Excelの読み込み（全シートを取得）
+    engine = "openpyxl"  # `.xlsm` も `openpyxl` で読み込む
+    
+    # Excelの読み込み
     df = pd.read_excel(uploaded_file, sheet_name=None, engine=engine)
 
     # シートの選択
