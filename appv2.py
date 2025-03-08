@@ -4,7 +4,7 @@ import re
 from datetime import datetime, timedelta
 
 # タイトル
-st.title("🕒 時間抽出＆フォーマット修正ツール")
+st.title("🕒 勤務時間抽出＆フォーマット修正ツール")
 
 # ファイルアップロード
 uploaded_file = st.file_uploader("📂 Excelファイルをアップロード", type=["xlsx"])
@@ -62,7 +62,7 @@ if uploaded_file:
                     if row_idx - offset >= 0:
                         potential_date = str(data.iloc[row_idx - offset, col_idx]).strip()
                         if potential_date.isdigit() and 1 <= len(potential_date) <= 2:
-                            date_value = potential_date  # 2桁以内の数値のみ日付として認識
+                            date_value = int(potential_date)  # 2桁以内の数値を整数化
                             break
                 
                 # **隣のセルから時間データ取得**
@@ -74,10 +74,10 @@ if uploaded_file:
                         memo_list.append([date_value, search_name, start_time, end_time, work_hours])
                         total_work_hours += work_hours  # 合計時間を加算
 
-    # **結果を表示**
-    st.subheader(f"📋 『{search_name}』の勤務時間（フォーマット修正後）")
+    # **データを日付順にソート**
     if memo_list:
         df_result = pd.DataFrame(memo_list, columns=["日付", "名前", "開始時間", "終了時間", "勤務時間（時間）"])
+        df_result = df_result.sort_values(by=["日付"], ascending=True, na_position='last')
         st.dataframe(df_result)
 
         # **合計勤務時間を表示**
