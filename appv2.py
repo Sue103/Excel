@@ -4,10 +4,10 @@ import re
 from datetime import datetime, timedelta
 
 # タイトル
-st.title("🕒 時間抽出＆フォーマット修正ツール")
+st.title("🕒 勤務時間抽出＆フォーマット修正ツール")
 
 # ファイルアップロード
-uploaded_file = st.file_uploader("📂 Excelファイルをアップロード", type=["xlsx"])
+uploaded_file = st.file_uploader("📂 Excelファイルをアップロード", type=["xlsx", "xlsm"])
 
 # 検索する名前を入力
 search_name = st.text_input("🔎 検索する名前を入力:", "", placeholder="名前を入力してください")
@@ -36,8 +36,12 @@ def format_time(time_str):
 
 # ファイルがアップロードされたら処理を開始
 if uploaded_file:
+    # ファイル拡張子をチェック
+    file_extension = uploaded_file.name.split(".")[-1]
+    engine = "openpyxl" if file_extension == "xlsx" else "xlrd"
+
     # Excelの読み込み（全シートを取得）
-    df = pd.read_excel(uploaded_file, sheet_name=None, engine="openpyxl")
+    df = pd.read_excel(uploaded_file, sheet_name=None, engine=engine)
 
     # シートの選択
     sheet_name = st.selectbox("📄 シートを選択:", options=df.keys())
