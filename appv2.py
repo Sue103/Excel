@@ -4,7 +4,7 @@ import re
 from datetime import datetime, timedelta
 
 # タイトル
-st.title("🕒 RODEO時間抽出＆フォーマット修正ツール")
+st.title("🕒 時間抽出＆フォーマット修正ツール")
 
 # ファイルアップロード
 uploaded_file = st.file_uploader("📂 Excelファイルをアップロード", type=["xlsx"])
